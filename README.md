@@ -1,4 +1,4 @@
 GettingCleaningData
 ===================
 
-Getting CXleaning Data Project
+Getting Cleaning Data Project
