@@ -118,7 +118,7 @@ run_analysis <- function() {
         group_by(Activity, Subject, Variable) %>%
         summarize(AvgVal = mean(Value) )
     
-    # Write the new average value file out
+    # Write the new average value files out
     dir=paste(wd,"/avg_data.txt", sep="")
     write.table(avg, file=dir, sep=",", row.names=FALSE)
     
