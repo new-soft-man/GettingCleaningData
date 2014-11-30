@@ -2,7 +2,7 @@ run_analysis <- function() {
     
     require(dplyr)
     require(reshape2)
-
+    
     wd=getwd()
     
     # Load activity labels 1 to 6
@@ -29,6 +29,7 @@ run_analysis <- function() {
         vars = c(vars, as.character(features[i,"varName"]))
     }
     
+    
     # Load Test subjects for all observations
     dir=paste(wd,"/ProjectData/test/subject_test.txt", sep="")
     subjects=data.frame(read.table(dir))
@@ -37,19 +38,20 @@ run_analysis <- function() {
     dir=paste(wd,"/ProjectData/test/y_test.txt", sep="")
     acts=data.frame(read.table(dir))
     
-    # Load Test observations into a data frame with appropriate column names
+    # Load Test observations into a data frame
     dir=paste(wd,"/ProjectData/test/x_test.txt", sep="")
     x=read.table(dir)
     df=data.frame(x)
+    # Select only mean and std-dev columns naming variables appropriately
     df=df[, cols]
     colnames(df)=vars
     
-    # Add columns for Test activity, subject and data source
+    # Add columns for Test activity and subject
     testdf=data.frame(Activity=NA_character_, Subject=0, df)
     testdf$Activity=as.character(testdf$Activity)
     testdf$Subject=as.numeric(testdf$Subject)
     
-    # Update the Test data frame with activity tetestdft, and subject #
+    # Update the Test data frame with activity tested, and subject #
     n=nrow(testdf)
     for (i in 1:n) {
         subno=subjects[i,1]
@@ -74,19 +76,20 @@ run_analysis <- function() {
     dir=paste(wd,"/ProjectData/train/y_train.txt", sep="")
     acts=data.frame(read.table(dir))
     
-    # Load Train observations into a data frame with appropriate column names
+    # Load Train observations into a data frame
     dir=paste(wd,"/ProjectData/train/x_train.txt", sep="")
     x=read.table(dir)
     df=data.frame(x)
+    # Select only mean and std-dev columns naming variables appropriately
     df=df[, cols]
     colnames(df)=vars
     
-    # Add columns for Train activity, subject and data source
+    # Add columns for Train activity and subject
     traindf=data.frame(Activity=NA_character_, Subject=0, df)
     traindf$Activity=as.character(traindf$Activity)
     traindf$Subject=as.numeric(traindf$Subject)
     
-    # Update the Test data frame with activity tetraindft, and subject #
+    # Update the Train data frame with activity trained, and subject #
     n=nrow(traindf)
     for (i in 1:n) {
         subno=subjects[i,1]
@@ -112,13 +115,14 @@ run_analysis <- function() {
     
     # Melt data to prepare for calculating averages
     molt=melt(df, id.vars=c("Activity", "Subject"), variable.name = "Variable", value.name = "Value")
+    molt=arrange(molt, Activity, Subject, Variable)
     
     # Calculate averages by Activity, Subject and Variable
     avg=molt %>%
         group_by(Activity, Subject, Variable) %>%
         summarize(AvgVal = mean(Value) )
     
-    # Write the new average value files out
+    # Write the new average value fileS out
     dir=paste(wd,"/avg_data.txt", sep="")
     write.table(avg, file=dir, sep=",", row.names=FALSE)
     
